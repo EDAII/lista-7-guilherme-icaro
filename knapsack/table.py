@@ -133,3 +133,23 @@ def unbounded_knapsack(w, n, V, W):
                 dp[i] = max(dp[i], dp[i - W[j]] + V[j])
 
     return dp[w]
+
+def reconstruct(i, w):
+    itens = []
+    size = 0
+
+    while True:
+        if taken[i][w]:
+            w -= W[i]
+            itens.append(i)
+            size += 1
+
+        if i == 0:
+            break
+
+        i -= 1
+
+    itens.reverse()
+
+    for item in itens:
+        print(W[item])
