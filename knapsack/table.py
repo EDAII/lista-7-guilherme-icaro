@@ -153,3 +153,37 @@ def reconstruct(i, w):
 
     for item in itens:
         print(W[item])
+
+
+
+table = GenerateTable()
+
+WEIGHT = 17
+QUANTITY = 5
+LIMIT = 100
+
+memoization_matrix = numpy.full((QUANTITY, WEIGHT+1), -1)
+visual_matrix = []
+
+W = [1, 5, 10, 25, 50]
+V = [1, 5, 10, 25, 50]
+
+headers = table.build_header(WEIGHT)
+visual_matrix = table.build_initial_matrix(QUANTITY, WEIGHT, W)
+
+taken = numpy.full((QUANTITY, WEIGHT+1), False)
+
+iterative_matrix = numpy.full((QUANTITY, WEIGHT+2), 0)
+
+visual_iterative_matrix = table.build_initial_matrix(QUANTITY, WEIGHT, W)
+
+result = recursive_knapsack(QUANTITY-1, WEIGHT)
+
+result = unbounded_knapsack(WEIGHT, QUANTITY, V, W)
+
+iterative_knapsack(QUANTITY, WEIGHT+1, iterative_matrix)
+
+table.create_knapsack_matrix(visual_matrix, headers)
+table.create_knapsack_matrix(visual_iterative_matrix, headers)
+
+reconstruct(QUANTITY-1, WEIGHT)
