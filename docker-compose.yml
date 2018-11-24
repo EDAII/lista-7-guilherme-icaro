@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+    knapsack:
+        container_name: knapsack
+        build:
+            context: .
+            dockerfile: Dockerfile
+        volumes:
+            - .:/knapsack_emulation
+        ports:
+            - 2000:2000
+        stdin_open: true
+        tty: true
