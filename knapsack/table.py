@@ -25,9 +25,6 @@ class GenerateTable():
 
         return headers
 
-    def build_line(self, results):
-        pass
-
     def build_initial_matrix(self, quantity_elements, weight, coins):
         matrix = []
 
@@ -35,8 +32,6 @@ class GenerateTable():
             line = []
             line.append(self.build_header_coins(coins, i))
             line += self.build_initial_line(weight+1)
-
-            print(line)
 
             matrix.append(line)
 
@@ -74,8 +69,10 @@ WEIGHT = 16
 QUANTITY = 5
 LIMIT = 100
 
-memoization_matrix = numpy.full((QUANTITY+1, WEIGHT), -1)
+memoization_matrix = numpy.full((QUANTITY, WEIGHT+1), -1)
 visual_matrix = []
+
+print(memoization_matrix)
 
 W = [1, 5, 10, 25, 50]
 V = [1, 5, 10, 25, 50]
@@ -84,8 +81,6 @@ headers = table.build_header(WEIGHT)
 
 visual_matrix = table.build_initial_matrix(QUANTITY, WEIGHT, V)
 
-print(visual_matrix)
+table.create_knapsack_matrix(visual_matrix, headers)
 
-visual_matrix = table.create_knapsack_matrix(visual_matrix, headers)
-
-# print(tabulate(visual_matrix, headers="firstrow"))
+recursive.recursive_knapsack(QUANTITY-1, WEIGHT, memoization_matrix, W, V, visual_matrix, table, headers)
