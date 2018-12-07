@@ -2,6 +2,11 @@ from tabulate import tabulate
 import random
 import numpy
 
+import algorithms.iterative_knapsack as iterative
+import algorithms.recursive_knapsack as recursive
+import algorithms.unbounded_knapsack as unbounded
+import algorithms.reconstruct_elements as reconstruct
+
 class GenerateTable():
 
     def create_knapsack_matrix(self, elements, headers):
@@ -20,15 +25,12 @@ class GenerateTable():
 
         return headers
 
-    def build_line(self, results):
-        pass
-
     def build_initial_matrix(self, quantity_elements, weight, coins):
         matrix = []
 
-        for i in range(0, len(coins), 1):
+        for i in range(len(coins)+1):
             line = []
-            line.append(self.build_header_coins(coins, i+1))
+            line.append(self.build_header_coins(coins, i))
             line += self.build_initial_line(weight+1)
 
             matrix.append(line)
@@ -38,10 +40,8 @@ class GenerateTable():
     def build_header_coins(self, coins, quantity):
         coin_list = '{ '
 
-        for i in range(1, quantity, 1):
-            if i is 0:
-                coin_list += str(coins[i])
-            elif i < quantity-1:
+        for i in range(0, quantity, 1):
+            if i < quantity-1:
                 coin_list += (str(coins[i]) + ', ')
             else:
                 coin_list += str(coins[i])
@@ -53,7 +53,7 @@ class GenerateTable():
     def build_initial_line(self, quantity):
         results = []
 
-        for i in range(0, quantity, 1):
+        for i in range(quantity):
             results.append('-')
 
         return results
@@ -63,127 +63,24 @@ class GenerateTable():
 
         return matrix
 
-
-def recursive_knapsack(i, w):
-
-    if i < 0 or w <= 0:
-        return 0
-
-    if memoization_matrix[i][w] != -1:
-        return memoization_matrix[i][w]
-
-    if W[i] > w:
-        memoization_matrix[i][w] = recursive_knapsack(i - 1, w)
-        return memoization_matrix[i][w]
-
-    not_take = recursive_knapsack(i - 1, w)
-    take = recursive_knapsack(i - 1, w - W[i]) + V[i]
-
-    if take > not_take:
-        memoization_matrix[i][w] = take
-        visual_matrix[i][w] = str(memoization_matrix[i][w])
-        taken[i][w] = True
-    else:
-        memoization_matrix[i][w] = not_take
-        visual_matrix[i][w] = str(memoization_matrix[i][w])
-
-    # table.create_knapsack_matrix(visual_matrix, headers)
-
-    return memoization_matrix[i][w]
-
-def iterative_knapsack(quantity, weight, iterative_matrix):
-    i = 1
-
-    for i in range(weight):
-        iterative_matrix[0][i+1] = 0
-        visual_iterative_matrix[0][i+1] = str(iterative_matrix[0][i+1])
-
-    i = 1
-
-    for i in range(quantity):
-        iterative_matrix[i][1] = 0
-        visual_iterative_matrix[i][1] = str(iterative_matrix[i][1])
-
-        w = 2
-
-        for w in range(2, weight+1):
-            if W[i] <= w:
-                iterative_matrix[i][w] = max(
-                    V[i] + iterative_matrix[i-1][w - W[i]],
-                    iterative_matrix[i-1][w]
-                )
-
-                visual_iterative_matrix[i][w] = str(iterative_matrix[i][w])
-
-            else:
-                iterative_matrix[i][w] = iterative_matrix[i-1][w]
-                visual_iterative_matrix[i][w] = str(iterative_matrix[i][w])
-
-        # table.create_knapsack_matrix(visual_iterative_matrix, headers)
-
-def unbounded_knapsack(w, n, V, W):
-
-    dp = [0 for i in range(w + 1)]
-
-    ans = 0
-
-    for i in range(w + 1):
-        for j in range(n):
-            if (W[j] <= i):
-                dp[i] = max(dp[i], dp[i - W[j]] + V[j])
-
-    return dp[w]
-
-def reconstruct(i, w):
-    itens = []
-    size = 0
-
-    while True:
-        if taken[i][w]:
-            w -= W[i]
-            itens.append(i)
-            size += 1
-
-        if i == 0:
-            break
-
-        i -= 1
-
-    itens.reverse()
-
-    for item in itens:
-        print(W[item])
-
-
-
 table = GenerateTable()
 
-WEIGHT = 17
+WEIGHT = 16
 QUANTITY = 5
 LIMIT = 100
 
-memoization_matrix = numpy.full((QUANTITY, WEIGHT+1), -1)
+memoization_matrix = numpy.full((QUANTITY+1, WEIGHT+1), -1)
 visual_matrix = []
 
 W = [1, 5, 10, 25, 50]
 V = [1, 5, 10, 25, 50]
 
 headers = table.build_header(WEIGHT)
-visual_matrix = table.build_initial_matrix(QUANTITY, WEIGHT, W)
 
-taken = numpy.full((QUANTITY, WEIGHT+1), False)
+visual_matrix = table.build_initial_matrix(QUANTITY, WEIGHT, V)
 
-iterative_matrix = numpy.full((QUANTITY, WEIGHT+2), 0)
+# table.create_knapsack_matrix(visual_matrix, headers)
 
-visual_iterative_matrix = table.build_initial_matrix(QUANTITY, WEIGHT, W)
+# recursive.recursive_knapsack(QUANTITY-1, WEIGHT, memoization_matrix, W, V, visual_matrix, table, headers)
 
-result = recursive_knapsack(QUANTITY-1, WEIGHT)
-
-result = unbounded_knapsack(WEIGHT, QUANTITY, V, W)
-
-iterative_knapsack(QUANTITY, WEIGHT+1, iterative_matrix)
-
-table.create_knapsack_matrix(visual_matrix, headers)
-table.create_knapsack_matrix(visual_iterative_matrix, headers)
-
-reconstruct(QUANTITY-1, WEIGHT)
+iterative.iterative_knapsack(QUANTITY-1, WEIGHT, memoization_matrix, W, V, visual_matrix, table, headers)
