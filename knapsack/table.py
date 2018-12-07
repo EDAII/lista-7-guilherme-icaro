@@ -72,8 +72,6 @@ LIMIT = 100
 memoization_matrix = numpy.full((QUANTITY+1, WEIGHT+1), -1)
 visual_matrix = []
 
-print(memoization_matrix)
-
 W = [1, 5, 10, 25, 50]
 V = [1, 5, 10, 25, 50]
 
@@ -81,7 +79,7 @@ headers = table.build_header(WEIGHT)
 
 visual_matrix = table.build_initial_matrix(QUANTITY, WEIGHT, V)
 
-table.create_knapsack_matrix(visual_matrix, headers)
+# table.create_knapsack_matrix(visual_matrix, headers)
 
 # recursive.recursive_knapsack(QUANTITY-1, WEIGHT, memoization_matrix, W, V, visual_matrix, table, headers)
 
